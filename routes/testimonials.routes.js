@@ -43,8 +43,10 @@ router.route('/testimonials/:id').put((req, res) => {
   const index = database.findIndex((element) => element.id == req.params.id);
 
   if (index != -1) {
-    database[index].author = req.body.author || database[index].author;
-    database[index].text = req.body.text || database[index].text;
+    database[index] = {
+      ...database[index],
+      ...req.body,
+    };
     res.json({ message: 'OK' });
   } else {
     res.status(404).json({ message: 'Not found...' });

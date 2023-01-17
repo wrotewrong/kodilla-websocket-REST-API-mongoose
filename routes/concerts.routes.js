@@ -40,11 +40,10 @@ router.route('/concerts/:id').put((req, res) => {
   const index = database.findIndex((element) => element.id == req.params.id);
 
   if (index != -1) {
-    database[index].performer = req.body.performer || database[index].performer;
-    database[index].genre = req.body.genre || database[index].genre;
-    database[index].price = req.body.price || database[index].price;
-    database[index].day = req.body.day || database[index].day;
-    database[index].image = req.body.image || database[index].image;
+    database[index] = {
+      ...database[index],
+      ...req.body,
+    };
     res.json({ message: 'OK' });
   } else {
     res.status(404).json({ message: 'Not found...' });

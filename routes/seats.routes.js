@@ -39,10 +39,10 @@ router.route('/seats/:id').put((req, res) => {
   const index = database.findIndex((element) => element.id == req.params.id);
 
   if (index != -1) {
-    database[index].day = req.body.day || database[index].day;
-    database[index].seat = req.body.seat || database[index].seat;
-    database[index].client = req.body.client || database[index].client;
-    database[index].email = req.body.email || database[index].email;
+    database[index] = {
+      ...database[index],
+      ...req.body,
+    };
     res.json({ message: 'OK' });
   } else {
     res.status(404).json({ message: 'Not found...' });
