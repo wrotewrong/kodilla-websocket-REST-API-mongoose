@@ -3,25 +3,33 @@ const router = express.Router();
 const db = require('../db');
 const { v4: uuidv4 } = require('uuid');
 
-// get random post
+const database = db.testimonials;
+
+// get random testimonial
 router.route('/testimonials/random').get((req, res) => {
-  const random = Math.floor(Math.random() * db.testimonials.length);
-  res.json(db.testimonials[random]);
+  const random = Math.floor(Math.random() * database.length);
+  res.json(database[random]);
 });
 
-// get all posts
+// get all testimonials
 router.route('/testimonials').get((req, res) => {
-  res.json(db.testimonials);
+  res.json(database);
 });
 
-// get post by id
+// get testimonial by id
 router.route('/testimonials/:id').get((req, res) => {
-  res.json(db.testimonials.filter((element) => element.id == req.params.id));
+  const index = database.findIndex((element) => element.id == req.params.id);
+
+  if (index != -1) {
+    res.json(database[index]);
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
-// add post
+// add testimonial
 router.route('/testimonials').post((req, res) => {
-  db.testimonials.push({
+  database.push({
     id: uuidv4(),
     author: req.body.author,
     text: req.body.text,
@@ -30,28 +38,29 @@ router.route('/testimonials').post((req, res) => {
   res.json({ message: 'OK' });
 });
 
-// modify post by id
+// modify testimonial by id
 router.route('/testimonials/:id').put((req, res) => {
-  db.testimonials.map((element) => {
-    if (element.id == req.params.id) {
-      element.author = req.body.author;
-      element.text = req.body.text;
-    } else {
-      return element;
-    }
-  });
+  const index = database.findIndex((element) => element.id == req.params.id);
 
-  res.json({ message: 'OK' });
+  if (index != -1) {
+    database[index].author = req.body.author || database[index].author;
+    database[index].text = req.body.text || database[index].text;
+    res.json({ message: 'OK' });
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
-// delete post by id
+// delete testimonial by id
 router.route('/testimonials/:id').delete((req, res) => {
-  const index = db.testimonials.findIndex(
-    (element) => element.id == req.params.id
-  );
-  db.testimonials.splice(index, 1);
+  const index = database.findIndex((element) => element.id == req.params.id);
 
-  res.json({ message: 'OK' });
+  if (index != -1) {
+    database.splice(index, 1);
+    res.json({ message: 'OK' });
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
 module.exports = router;

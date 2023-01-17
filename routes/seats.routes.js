@@ -3,19 +3,27 @@ const router = express.Router();
 const db = require('../db');
 const { v4: uuidv4 } = require('uuid');
 
-// show all seats
+const database = db.seats;
+
+// get all seats
 router.route('/seats').get((req, res) => {
-  res.json(db.seats);
+  res.json(database);
 });
 
-// show seat by id
+// get seat by id
 router.route('/seats/:id').get((req, res) => {
-  res.json(db.seats.filter((element) => element.id == req.params.id));
+  const index = database.findIndex((element) => element.id == req.params.id);
+
+  if (index != -1) {
+    res.json(database[index]);
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
-// add seat
+// add seats
 router.route('/seats').post((req, res) => {
-  db.seats.push({
+  database.push({
     id: uuidv4(),
     day: req.body.day,
     seat: req.body.seat,
@@ -28,26 +36,29 @@ router.route('/seats').post((req, res) => {
 
 // modify seat by id
 router.route('/seats/:id').put((req, res) => {
-  db.seats.map((element) => {
-    if (element.id == req.params.id) {
-      element.day = req.body.day;
-      element.seat = req.body.seat;
-      element.client = req.body.client;
-      element.email = req.body.email;
-    } else {
-      return element;
-    }
-  });
+  const index = database.findIndex((element) => element.id == req.params.id);
 
-  res.json({ message: 'OK' });
+  if (index != -1) {
+    database[index].day = req.body.day || database[index].day;
+    database[index].seat = req.body.seat || database[index].seat;
+    database[index].client = req.body.client || database[index].client;
+    database[index].email = req.body.email || database[index].email;
+    res.json({ message: 'OK' });
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
 // delete seat by id
 router.route('/seats/:id').delete((req, res) => {
-  const index = db.seats.findIndex((element) => element.id == req.params.id);
-  db.seats.splice(index, 1);
+  const index = database.findIndex((element) => element.id == req.params.id);
 
-  res.json({ message: 'OK' });
+  if (index != -1) {
+    database.splice(index, 1);
+    res.json({ message: 'OK' });
+  } else {
+    res.status(404).json({ message: 'Not found...' });
+  }
 });
 
 module.exports = router;
