@@ -23,15 +23,22 @@ router.route('/seats/:id').get((req, res) => {
 
 // add seats
 router.route('/seats').post((req, res) => {
-  database.push({
-    id: uuidv4(),
-    day: req.body.day,
-    seat: req.body.seat,
-    client: req.body.client,
-    email: req.body.email,
-  });
+  const filteredDatabase = database.filter(
+    (element) => element.day == req.body.day && element.seat == req.body.seat
+  );
 
-  res.json({ message: 'OK' });
+  if (filteredDatabase.length == 0) {
+    database.push({
+      id: uuidv4(),
+      day: Number(req.body.day),
+      seat: Number(req.body.seat),
+      client: req.body.client,
+      email: req.body.email,
+    });
+    res.json({ message: 'OK' });
+  } else {
+    res.status(404).json({ message: 'The slot is already taken...' });
+  }
 });
 
 // modify seat by id
