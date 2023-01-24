@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const database = db.concerts;
 
-// get all concerts
+//  get all concerts
 router.route('/concerts').get((req, res) => {
   res.json(database);
 });
