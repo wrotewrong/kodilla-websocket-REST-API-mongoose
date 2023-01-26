@@ -5,22 +5,29 @@ import {
   getSeats,
   loadSeatsRequest,
   getRequests,
+  loadSeats,
 } from '../../../redux/seatsRedux';
 import './SeatChooser.scss';
+import io from 'socket.io-client';
 
 const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
   const dispatch = useDispatch();
   const seats = useSelector(getSeats);
   const requests = useSelector(getRequests);
+  const SEATS_NUMBER = 50;
 
   useEffect(() => {
     dispatch(loadSeatsRequest());
-    const refreshSeats = setInterval(() => {
-      dispatch(loadSeatsRequest());
-    }, 120000);
-    return () => {
-      clearInterval(refreshSeats);
-    };
+
+    const socket = io(
+      process.env.NODE_ENV === 'production' ? '' : 'localhost:8000',
+      { transports: ['websocket'] }
+    );
+
+    socket.on('seatsUpdated', (seatsServer) => {
+      console.log('seats received from the server');
+      dispatch(loadSeats(seatsServer));
+    });
   }, [dispatch]);
 
   const isTaken = (seatId) => {
@@ -65,7 +72,15 @@ const SeatChooser = ({ chosenDay, chosenSeat, updateSeat }) => {
       </small>
       {requests['LOAD_SEATS'] && requests['LOAD_SEATS'].success && (
         <div className='seats'>
-          {[...Array(50)].map((x, i) => prepareSeat(i + 1))}
+          {[...Array(SEATS_NUMBER)].map((x, i) => prepareSeat(i + 1))}
+          <p>
+            Free seats:
+            {SEATS_NUMBER -
+              seats.filter(
+                (element) => Number(element.day) === Number(chosenDay)
+              ).length}
+            /{SEATS_NUMBER}
+          </p>
         </div>
       )}
       {requests['LOAD_SEATS'] && requests['LOAD_SEATS'].pending && (
