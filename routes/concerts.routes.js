@@ -1,65 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
-const { v4: uuidv4 } = require('uuid');
+const concertsController = require('../controllers/concerts.controller');
 
-const database = db.concerts;
+router.get('/concerts/random', concertsController.getRandom);
 
-//  get all concerts
-router.route('/concerts').get((req, res) => {
-  res.json(database);
-});
+router.get('/concerts', concertsController.getAll);
 
-// get concert by id
-router.route('/concerts/:id').get((req, res) => {
-  const index = database.findIndex((element) => element.id == req.params.id);
+router.get('/concerts/:id', concertsController.getById);
 
-  if (index != -1) {
-    res.json(database[index]);
-  } else {
-    res.status(404).json({ message: 'Not found...' });
-  }
-});
+router.post('/concerts', concertsController.add);
 
-// add concert
-router.route('/concerts').post((req, res) => {
-  database.push({
-    id: uuidv4(),
-    performer: req.body.performer,
-    genre: req.body.genre,
-    price: req.body.price,
-    day: req.body.day,
-    image: req.body.image,
-  });
+router.put('/concerts/:id', concertsController.edit);
 
-  res.json({ message: 'OK' });
-});
-
-// modify concert by id
-router.route('/concerts/:id').put((req, res) => {
-  const index = database.findIndex((element) => element.id == req.params.id);
-
-  if (index != -1) {
-    database[index] = {
-      ...database[index],
-      ...req.body,
-    };
-    res.json({ message: 'OK' });
-  } else {
-    res.status(404).json({ message: 'Not found...' });
-  }
-});
-
-// delete concert by id
-router.route('/concerts/:id').delete((req, res) => {
-  const index = database.findIndex((element) => element.id == req.params.id);
-
-  if (index != -1) {
-    database.splice(index, 1);
-    res.json({ message: 'OK' });
-  } else {
-    res.status(404).json({ message: 'Not found...' });
-  }
-});
+router.delete('/concerts/:id', concertsController.remove);
 
 module.exports = router;
