@@ -68,6 +68,7 @@ export default function reducer(statePart = initialState, action = {}) {
   switch (action.type) {
     case LOAD_SEATS:
       return { ...statePart, data: [...action.payload] };
+    // return { ...statePart, data: [...statePart.data, action.payload] };
     case ADD_SEAT:
       return { ...statePart, data: [...statePart.data, action.payload] };
     case START_REQUEST:

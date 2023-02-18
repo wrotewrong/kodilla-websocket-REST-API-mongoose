@@ -34,9 +34,13 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Not found...' });
 });
 
-mongoose.connect('mongodb://localhost:27017/NewWaveDB', {
-  useNewUrlParser: true,
-});
+mongoose.connect(
+  // 'mongodb://localhost:27017/NewWaveDB',
+  'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+  }
+);
 const db = mongoose.connection;
 
 db.once('open', () => {

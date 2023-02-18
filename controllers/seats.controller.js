@@ -44,6 +44,7 @@ exports.add = async (req, res) => {
     await newSeat.save();
     res.json({ message: 'OK', newSeat });
     req.io.emit('seatsUpdated', await Seat.find());
+    // req.io.emit('seatsUpdated', newSeat);
   } catch (err) {
     res.status(500).json({ message: err });
   }
