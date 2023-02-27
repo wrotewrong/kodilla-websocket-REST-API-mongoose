@@ -34,22 +34,41 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Not found...' });
 });
 
-mongoose.connect(
-  // 'mongodb://localhost:27017/NewWaveDB',
-  'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority',
-  {
-    useNewUrlParser: true,
-  }
-);
+const NODE_ENV = process.env.NODE_ENV;
+let dbUri = '';
+
+if (NODE_ENV === 'test') {
+  dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
+} else {
+  dbUri =
+    'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority';
+}
+
+// if (NODE_ENV === 'production')
+//   dbUri =
+//     'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority';
+// else if (NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
+// else dbUri = 'mongodb://localhost:27017/NewWaveDB';
+
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
+// mongoose.connect(
+//   // 'mongodb://localhost:27017/NewWaveDB',
+//   'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority',
+//   {
+//     useNewUrlParser: true,
+//   }
+// );
+// const db = mongoose.connection;
+
 db.once('open', () => {
-  console.log('Connected to the database');
+  // console.log('Connected to the database');
 });
 db.on('error', (err) => console.log('Error ' + err));
 
 const server = app.listen(process.env.PORT || 8000, () => {
-  console.log('Server is running on port: 8000');
+  // console.log('Server is running on port: 8000');
 });
 
 const io = socket(server);
@@ -57,6 +76,8 @@ const io = socket(server);
 io.on('connection', (socket) => {
   console.log('new socket!', socket.id);
 });
+
+module.exports = server;
 
 // app.get('/testimonials/random', (req, res) => {
 //   const random = Math.floor(Math.random() * db.testimonials.length);
