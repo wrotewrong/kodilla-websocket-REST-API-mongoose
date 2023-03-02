@@ -9,10 +9,13 @@ const concertsRoutes = require('./routes/concerts.routes');
 const seatsRoutes = require('./routes/seats.routes');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+require('dotenv').config();
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '/client/build')));
 
+app.use(helmet());
 app.use(cors());
 app.use(express.urlencoded({ extends: false }));
 app.use(express.json());
@@ -40,13 +43,12 @@ let dbUri = '';
 if (NODE_ENV === 'test') {
   dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
 } else {
-  dbUri =
-    'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority';
+  dbUri = `mongodb+srv://wrotewrong:${process.env.DB_PASS}@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority`;
 }
 
 // if (NODE_ENV === 'production')
 //   dbUri =
-//     'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority';
+//     `mongodb+srv://wrotewrong:${process.env.DB_PASS}@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority`;
 // else if (NODE_ENV === 'test') dbUri = 'mongodb://localhost:27017/NewWaveDBtest';
 // else dbUri = 'mongodb://localhost:27017/NewWaveDB';
 
@@ -55,7 +57,7 @@ const db = mongoose.connection;
 
 // mongoose.connect(
 //   // 'mongodb://localhost:27017/NewWaveDB',
-//   'mongodb+srv://wrotewrong:kehR6IjGoAZUDkSJ@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority',
+//   `mongodb+srv://wrotewrong:${process.env.DB_PASS}@kodilla-seatsapp.eao3ckp.mongodb.net/kodilla-seatsApp?retryWrites=true&w=majority`,
 //   {
 //     useNewUrlParser: true,
 //   }
